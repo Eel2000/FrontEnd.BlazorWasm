@@ -17,7 +17,7 @@ namespace FrondEnd.Shared.Models
         public string? UserName { get; set; }
 
         [Required(ErrorMessage = "PLease add a password"),
-            DataType(DataType.Password), MaxLength(6)]
+            DataType(DataType.Password), StringLength(6)]
         public string? Password { get; set; }
     }
 }

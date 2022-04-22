@@ -9,6 +9,13 @@ namespace FrondEnd.Shared.Models
 {
     public class Products
     {
+        public Products(string? name, decimal price, int quantity)
+        {
+            Name = name;
+            Price = price;
+            Quantity = quantity;
+        }
+
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Name { get; set; }
