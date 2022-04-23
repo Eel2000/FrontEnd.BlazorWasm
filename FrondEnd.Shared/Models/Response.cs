@@ -12,6 +12,11 @@ namespace FrondEnd.Shared.Models
     /// <typeparam name="T"></typeparam>
     public class Response<T>
     {
+        public Response()
+        {
+
+        }
+
         public Response(string status, string message)
         {
             Status = status;
