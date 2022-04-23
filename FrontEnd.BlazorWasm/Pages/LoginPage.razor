@@ -1,8 +1,12 @@
 ﻿@page "/"
 
+@inject IJSRuntime jsInterop
+@inject IServerService server
 @inject NavigationManager navigator
 
 
+
+<PageTitle>Authentication</PageTitle>
 <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
@@ -16,23 +20,30 @@
                                      style="width: 120px;" alt="logo">
                                 <h4 class="mt-1 mb-5 pb-1">We are The DelataP Team</h4>
                             </div>
-
-                            <form>
+                            @if (logInFailed)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    @logInFailedMessage
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+                            <EditForm Model="@user" OnValidSubmit="@LoginAsync">
                                 <p>Please login to your account</p>
-
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
                                 <div class="form-outline mb-4">
-                                    <input type="email" id="form2Example11" class="form-control"
-                                           placeholder="Phone number or email address" />
+                                    <input type="text" id="form2Example11" class="form-control"
+                                           placeholder="Phone number or email address" @bind-value="@user.Username" />
                                     <label class="form-label" for="form2Example11">Username</label>
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="password" id="form2Example22" class="form-control" />
+                                    <input type="password" id="form2Example22" class="form-control" @bind-value="@user.Password" />
                                     <label class="form-label" for="form2Example22">Password</label>
                                 </div>
 
                                 <div class="text-center pt-1 mb-5 pb-1">
-                                    <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="button" @onclick="(()=>GoToHome())">
+                                    <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">
                                         Log
                                         in
                                     </button>
@@ -44,7 +55,7 @@
                                     <button type="button" class="btn btn-outline-danger">Create new</button>
                                 </div>
 
-                            </form>
+                            </EditForm>
 
                         </div>
                     </div>
@@ -65,8 +76,43 @@
 </div>
 
 @code {
-    private void GoToHome()
+    private UserDTO user = new();
+    private bool logInFailed = false;
+    private string logInFailedMessage = default!;
+
+    protected override async Task OnInitializedAsync()
     {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            logInFailedMessage = "Your session has experied";
+            navigator.NavigateTo("/");
+        }
+        else
+        {
+            navigator.NavigateTo("/home");
+        }
+    }
+
+    private async Task LoginAsync()
+    {
+        var res = await server.AuthenticateAsync(user);
+        if (res.Status == "SUCCESS")
+        {
+            GoToHome(res.Data);
+        }
+        else if (res.Status == "ERROR")
+        {
+            logInFailedMessage = res.Message;
+            logInFailed = true;
+        }
+
+        user = new();//reset the form
+    }
+
+    private async void GoToHome(string token)
+    {
+        await jsInterop.InvokeVoidAsync("setData", "token", token);
         navigator.NavigateTo("/home");
     }
 }
