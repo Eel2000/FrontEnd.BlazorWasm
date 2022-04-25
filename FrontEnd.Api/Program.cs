@@ -87,7 +87,7 @@ builder.Services.AddAuthentication(options =>
                     context.Response.StatusCode = 401;
                     context.Response.ContentType = "application/json";
                 }
-                return context.Response.WriteAsJsonAsync(new Response<string>("UN_AUTH", "You are not authorized"));
+                return context.Response.WriteAsJsonAsync(new Response<string>("UN_AUTH", $"{context.Error} {context.ErrorDescription}"));
             },
             OnForbidden = context =>
             {

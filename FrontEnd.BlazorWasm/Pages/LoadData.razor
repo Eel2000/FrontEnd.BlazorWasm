@@ -1,0 +1,82 @@
+﻿@page "/load-data"
+@using System.Collections.ObjectModel
+
+@layout SecondaryLayout
+
+@inject IJSRuntime jsInterop
+@inject IServerService server
+
+<PageTitle>Data-loading</PageTitle>
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('assets/img/post-sample-image.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>Our Data</h1>
+                    <span class="subheading">Here is an example of fetching data from the server.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    @if (GetProducts is null)
+    {
+
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">@nameof(Products.Name)</th>
+                    <th scope="col">@nameof(Products.Price) (EUR)</th>
+                    <th scope="col">@nameof(Products.Quantity)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in GetProducts)
+                {
+                    <tr>
+                        <th scope="row">@(GetProducts.IndexOf(item)+1)</th>
+                        <td>@item.Name</td>
+                        <td>@item.Price</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+
+    private ObservableCollection<Products> GetProducts = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            var response = await server.GetProductsAsync(token);
+            if (response.Status == "SUCCESS")
+            {
+                GetProducts = new ObservableCollection<Products>(response.Data);
+            }
+            else
+            {
+                //notify the user
+                Console.WriteLine(response.Message);
+            }
+        }
+        else
+        {
+            //tell the user that there's something wrong with data fetching.
+            Console.WriteLine("user is not connected. the token is missing");
+        }
+    }
+
+}
