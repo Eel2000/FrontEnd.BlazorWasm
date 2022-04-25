@@ -41,5 +41,20 @@ namespace FrontEnd.BlazorWasm.Services
                 return new Response<string>("ERROR", "Failed to process, something went wrong");
             }
         }
+
+        public async Task<Response<IReadOnlyList<Products>>> GetProductsAsync(string token)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Products>>>("/api/Products/get-products");
+                return response!;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(500, "Internal error"), e, "Error while processing");
+                return new Response<IReadOnlyList<Products>>("ERROR", "Failed to get data");
+            }
+        }
     }
 }

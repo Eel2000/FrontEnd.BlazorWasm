@@ -96,6 +96,7 @@
 
     private async Task LoginAsync()
     {
+        logInFailed = false;
         var res = await server.AuthenticateAsync(user);
         if (res.Status == "SUCCESS")
         {
