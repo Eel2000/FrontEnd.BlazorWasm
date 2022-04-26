@@ -40,7 +40,7 @@
             <tbody>
                 @foreach (var item in GetProducts)
                 {
-                    <tr>
+                    <tr @onclick="(()=>GetDetail(item))">
                         <th scope="row">@(GetProducts.IndexOf(item)+1)</th>
                         <td>@item.Name</td>
                         <td>@item.Price</td>
@@ -76,6 +76,19 @@
         {
             //tell the user that there's something wrong with data fetching.
             Console.WriteLine("user is not connected. the token is missing");
+        }
+    }
+
+    private async void GetDetail(Products products)
+    {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            //this is just an api call simulation
+            //TODO: call an api and use to result 
+            var result = await server.GetProductsDetailsAsync(token, products.Id);
+            //js to display a alert
+            await jsInterop.InvokeVoidAsync($"callAlert", $"**{products.Name}** has been selected");
         }
     }
 

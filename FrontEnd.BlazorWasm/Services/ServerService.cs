@@ -56,5 +56,22 @@ namespace FrontEnd.BlazorWasm.Services
                 return new Response<IReadOnlyList<Products>>("ERROR", "Failed to get data");
             }
         }
+
+        public async Task<Response<Products>> GetProductsDetailsAsync(string token, string id)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                //TODO: the de get_by_id api. to be implemented
+
+                //return result
+                return new Response<Products>("SUCCESS", "details get");//this is jus a similation
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(500, "internal error"), e, "An error occured while processing");
+                return new Response<Products>("ERROR", "Failed to get result");
+            }
+        }
     }
 }

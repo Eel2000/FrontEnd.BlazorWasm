@@ -12,3 +12,7 @@ function getData(key) {
 function clearStorage() {
     localStorage.clear();
 }
+
+function callAlert(name) {
+    alert(name)
+}
