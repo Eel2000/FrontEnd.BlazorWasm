@@ -1,5 +1,6 @@
 ﻿@page "/load-data"
 @using System.Collections.ObjectModel
+@using Telerik.Blazor
 
 @layout SecondaryLayout
 
@@ -8,7 +9,7 @@
 
 <PageTitle>Fetch-data</PageTitle>
 <!-- Page Header-->
-<header class="masthead" style="background-image: url('assets/img/post-sample-image.jpg')">
+@*<header class="masthead" style="background-image: url('assets/img/post-sample-image.jpg')">
     <div class="container position-relative px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
@@ -19,9 +20,9 @@
             </div>
         </div>
     </div>
-</header>
+</header>*@
 
-<div class="container">
+@*<div class="container">
     @if (GetProducts is null)
     {
 
@@ -50,7 +51,15 @@
             </tbody>
         </table>
     }
-</div>
+</div>*@
+<TelerikGrid Data="@GetProducts" Pageable="true"
+             Sortable="true" FilterMode="@GridFilterMode.FilterMenu" class="p-5">
+             <GridColumns>
+                 <GridColumn Field="@nameof(Products.Name)" Title="Product Name"/>
+                 <GridColumn Field="@nameof(Products.Price)" Title="Price ($)"/>
+                 <GridColumn Field="@nameof(Products.Quantity)" title="Stock quantity"/>
+             </GridColumns>
+</TelerikGrid>
 
 @code {
 
