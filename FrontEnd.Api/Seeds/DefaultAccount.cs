@@ -1,6 +1,7 @@
 ﻿using FrondEnd.Shared.Models;
 using FrontEnd.Api.Contexts;
 using FrontEnd.Api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FrontEnd.Api.Seeds
 {
@@ -9,6 +10,11 @@ namespace FrontEnd.Api.Seeds
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var authService = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var data = await authService.Products.ToListAsync();
+            authService.Products.RemoveRange(data);
+            await authService.SaveChangesAsync();
+
             var defaultUser = new ApplicationUser
             {
                 UserName = "Test",
@@ -31,6 +37,34 @@ namespace FrontEnd.Api.Seeds
                     new Products("PineApple", 15,200),
                     new Products("LapTop", 500,1000),
                     new Products("Car Audi", 40000,100),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
+                    new Products("car VW", 15000,200),
                     new Products("car VW", 15000,200),
                 };
                 await authService.Products.AddRangeAsync(prods);
