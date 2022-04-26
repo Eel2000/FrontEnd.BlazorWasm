@@ -1,65 +1,26 @@
 ﻿@page "/load-data"
 @using System.Collections.ObjectModel
 @using Telerik.Blazor
+@using Telerik.DataSource
 
 @layout SecondaryLayout
 
 @inject IJSRuntime jsInterop
 @inject IServerService server
+@inject IPdfExportationService pdf
 
 <PageTitle>Fetch-data</PageTitle>
-<!-- Page Header-->
-@*<header class="masthead" style="background-image: url('assets/img/post-sample-image.jpg')">
-    <div class="container position-relative px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-7">
-                <div class="page-heading">
-                    <h1>Our Data</h1>
-                    <span class="subheading">Here is an example of fetching data from the server.</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>*@
-
-@*<div class="container">
-    @if (GetProducts is null)
-    {
-
-    }
-    else
-    {
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">@nameof(Products.Name)</th>
-                    <th scope="col">@nameof(Products.Price) (EUR)</th>
-                    <th scope="col">@nameof(Products.Quantity)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in GetProducts)
-                {
-                    <tr @onclick="(()=>GetDetail(item))">
-                        <th scope="row">@(GetProducts.IndexOf(item)+1)</th>
-                        <td>@item.Name</td>
-                        <td>@item.Price</td>
-                        <td>@item.Quantity</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>*@
-<TelerikGrid Data="@GetProducts" Pageable="true"
-             Sortable="true" FilterMode="@GridFilterMode.FilterMenu" class="p-5">
-             <GridColumns>
-                 <GridColumn Field="@nameof(Products.Name)" Title="Product Name"/>
-                 <GridColumn Field="@nameof(Products.Price)" Title="Price ($)"/>
-                 <GridColumn Field="@nameof(Products.Quantity)" title="Stock quantity"/>
-             </GridColumns>
-</TelerikGrid>
+<div class="container">
+    <button class="btn btn-primary p-4" @onclick="@(()=>ExportToPDF())"><span class="oi oi-print">Export PDF</span></button>
+    <TelerikGrid Data="@GetProducts" Pageable="true"
+                 Sortable="true" FilterMode="@GridFilterMode.FilterMenu" class="p-5">
+        <GridColumns>
+            <GridColumn Field="@nameof(Products.Name)" Title="Product Name" />
+            <GridColumn Field="@nameof(Products.Price)" Title="Price ($)" />
+            <GridColumn Field="@nameof(Products.Quantity)" title="Stock quantity" />
+        </GridColumns>
+    </TelerikGrid>
+</div>
 
 @code {
 
@@ -94,11 +55,16 @@
         if (!string.IsNullOrWhiteSpace(token))
         {
             //this is just an api call simulation
-            //TODO: call an api and use to result 
+            //TODO: call an api and use to result
             var result = await server.GetProductsDetailsAsync(token, products.Id);
             //js to display a alert
             await jsInterop.InvokeVoidAsync($"callAlert", $"**{products.Name}** has been selected");
         }
+    }
+
+    void ExportToPDF()
+    {
+        pdf.ExportPdf(GetProducts, $"report-{Guid.NewGuid()}.pdf", $"The report from {DateTime.Now}", "Products");
     }
 
 }

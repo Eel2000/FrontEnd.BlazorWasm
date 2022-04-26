@@ -17,5 +17,6 @@ builder.Services.AddTelerikBlazor();
 
 //adding our services to the IoC container.
 builder.Services.AddTransient<IServerService, ServerService>();
+builder.Services.AddTransient<IPdfExportationService, PdfExportationService>();
 
 await builder.Build().RunAsync();
