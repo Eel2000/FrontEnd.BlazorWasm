@@ -18,5 +18,13 @@ namespace FrontEnd.BlazorWasm.Services.Interfaces
         /// <param name="token">The auth token</param>
         /// <returns><see cref="Response{T}"/> T is a <seealso cref="IReadOnlyList{T}"/> of <seealso cref="Products"/></returns>
         Task<Response<IReadOnlyList<Products>>> GetProductsAsync(string token);
+
+        /// <summary>
+        /// Get the specific product details
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<Response<Products>> GetProductsDetailsAsync(string token, string id);
     }
 }
