@@ -13,11 +13,19 @@ namespace FrontEnd.BlazorWasm.Services.Interfaces
         Task<Response<string>> AuthenticateAsync(UserDTO user);
 
         /// <summary>
+        /// Used to connect to the production API
+        /// </summary>
+        /// <param name="user">Creds</param>
+        /// <returns>the auth token</returns>
+        Task<object> LoginAsync(UserDTO user);
+
+        /// <summary>
         /// Load list of products from the server.
         /// </summary>
         /// <param name="token">The auth token</param>
         /// <returns><see cref="Response{T}"/> T is a <seealso cref="IReadOnlyList{T}"/> of <seealso cref="Products"/></returns>
         Task<Response<IReadOnlyList<Products>>> GetProductsAsync(string token);
+        Task<IEnumerable<object>> GetODataAsync(string token);
 
         /// <summary>
         /// Get the specific product details

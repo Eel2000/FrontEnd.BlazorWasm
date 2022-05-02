@@ -3,6 +3,7 @@ using FrondEnd.Shared.Models;
 using FrontEnd.BlazorWasm.Services.Interfaces;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
+using FrondEnd.Shared.Utils;
 
 namespace FrontEnd.BlazorWasm.Services
 {
@@ -42,6 +43,21 @@ namespace FrontEnd.BlazorWasm.Services
             }
         }
 
+        public async Task<IEnumerable<object>> GetODataAsync(string token)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetFromJsonAsync<IEnumerable<object>>("/getData?serviceName=Interventi");
+                return response!;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(500, "Internal error"), e, "Error while processing");
+                return null!;
+            }
+        }
+
         public async Task<Response<IReadOnlyList<Products>>> GetProductsAsync(string token)
         {
             try
@@ -71,6 +87,35 @@ namespace FrontEnd.BlazorWasm.Services
             {
                 _logger.LogError(new EventId(500, "internal error"), e, "An error occured while processing");
                 return new Response<Products>("ERROR", "Failed to get result");
+            }
+        }
+
+        public async Task<object> LoginAsync(UserDTO user)
+        {
+            try
+            {
+                var credentials = new
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    ClientId = Constants.CLIENTID
+                };
+
+                var resquest = await _httpClient.PostAsJsonAsync("/getToken", credentials);
+                if (resquest.IsSuccessStatusCode)
+                {
+                    var rawData = await resquest.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<object>(rawData);
+
+                    return data!;
+                }
+
+                return null!;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(500, "Api error"), e, "An error occured while processing");
+                return e.Message;
             }
         }
     }

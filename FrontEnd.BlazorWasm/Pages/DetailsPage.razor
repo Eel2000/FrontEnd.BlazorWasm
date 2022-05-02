@@ -1,0 +1,27 @@
+﻿
+
+<TelerikWindow Class="demo-window" Width="500px" Height="300px" Centered="true" @bind-Visible=@WindowVisible Modal="true">
+    <WindowTitle>
+        <strong>Details of Product <b>@Products.Name</b></strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
+    <WindowContent>
+        <ul>
+            <li>@Products.Id</li>
+            <li>@Products.Name</li>
+            <li>@Products.Price</li>
+            <li>@Products.Quantity</li>
+        </ul>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    [Parameter]
+    public bool WindowVisible { get; set; } = false;
+
+    [Parameter]
+    public Products Products { get; set; } = default!;
+
+}
