@@ -89,7 +89,7 @@
         if (!string.IsNullOrWhiteSpace(token))
         {
             //this is just an api call simulation
-            //TODO: call an api and use to result
+            //TODO: call an api and use to result.
             var result = await server.GetProductsDetailsAsync(token, products.Id);
             //js to display a alert
             await jsInterop.InvokeVoidAsync($"callAlert", $"**{products.Name}** has been selected");
