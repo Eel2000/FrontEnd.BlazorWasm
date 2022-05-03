@@ -15,15 +15,15 @@
     <link rel="stylesheet" href="_content/Telerik.UI.for.Blazor.Trial/css/kendo-theme-default/all.css" />
 
     <!--Template links and scripts-->
-    <!--<script src="https://unpkg.com/jquery"></script>-->
-    <!--<link href="~/css/pffe.css" type="text/css" rel="stylesheet" />-->
-    <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/jquery"></script>
+    <link href="~/css/pffe.css" type="text/css" rel="stylesheet" />
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2020.3.1118/js/kendo.all.min.js"></script>
     <link rel="stylesheet" href="/common/css/kendo.bootstrap-v4.min.css" />
     <link rel="stylesheet" href="/common/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/common/css/pffe2.css" />
     <script src="/common/js/cultures/kendo.culture.it-IT.min.js"></script>
-    <script src="/common/js/messages/kendo.messages.it-IT.min.js"></script>-->
+    <script src="/common/js/messages/kendo.messages.it-IT.min.js"></script>
     <!--Second template-->
     <!-- Font Awesome icons (free version)-->
     <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -97,6 +97,124 @@
             100% {
                 top: 0;
             }
+        }
+    </style>
+    <style>
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            <!-- font-size: 10px; -->
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+            padding: 28px;
+        }
+
+        /*change y overlow in content (for detail)*/
+        .k-grid-content {
+            width: 100%;
+            min-height: 0;
+            overflow: auto;
+            overflow-x: auto;
+            overflow-y: auto !important;
+            position: relative;
+            -ms-flex: 1;
+            flex: 1;
+        }
+
+
+        .container {
+            margin-right: auto;
+            margin-left: auto;
+            padding-left: 30px;
+            padding-right: 30px;
+            clear: both;
+        }
+
+
+        <!-- #loginDiv table { -->
+            <!-- border-color: #187fb2; -->
+            <!-- /*width: 75%;*/ -->
+            <!-- width: 400px -->
+            <!--
+        }
+        -->
+        #loginTable {
+            border-color: #003579; /*#187fb2*/
+            /*width: 75%;*/
+            /*width:300px;*/
+        }
+
+
+        <!-- #loginDiv table TD { -->
+            <!-- padding-top: 10px; -->
+            <!-- padding-bottom: 10px; -->
+            <!-- padding-left: 20px; -->
+            <!--
+        }
+        -->
+        #loginTable TD {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        <!-- .loginLabel { -->
+            <!-- text-align: right; -->
+            <!-- padding-right: 20px; -->
+            <!-- width: 50%; -->
+            <!-- color: #003579; -->
+            <!-- font-weight: bold; -->
+            <!--
+        }
+        -->
+        .loginLabel {
+            /*text-align: right;*/
+            padding-right: 20px;
+            /*width: 50%;*/
+            color: #003579;
+            font-weight: bold;
+        }
+
+        <!-- .innerDiv { -->
+            <!-- padding-top: 20px; -->
+            <!-- <!--
+            border: solid 1px #003579; --> -->
+            <!-- border: rgba(0,0,0,0); -->
+            <!-- width: 500px; -->
+            <!-- margin-left: auto; -->
+            <!-- margin-right: auto; -->
+            <!--
+        }
+        -->
+        .innerDiv {
+            padding-top: 20px;
+            <!-- border: solid 1px #003579; -->
+            border: rgba(0,0,0,0);
+            width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .k-link {
+            f font-size: 13px !important;
+        }
+
+        .formLabel {
+            color: #003579;
+            width: 150px;
+            background-color: #f5f5f5;
+            border-color: rgba(33,37,41, 0.125) !important;
+            border-bottom-width: 1px !important;
+            border-left-width: 1px !important;
+        }
+
+        .formcontent {
+            color: #212529;
+            background-color: #ffffff;
+            border-color: rgba(33,37,41, 0.125) !important;
+            border-right-width: 1px !important;
+            <!-- border-width: 0 1px 1px 0px; -->
         }
     </style>
 </head>

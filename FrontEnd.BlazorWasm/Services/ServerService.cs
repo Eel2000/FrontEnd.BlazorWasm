@@ -43,12 +43,12 @@ namespace FrontEnd.BlazorWasm.Services
             }
         }
 
-        public async Task<IEnumerable<object>> GetODataAsync(string token)
+        public async Task<object> GetODataAsync(string token)
         {
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<IEnumerable<object>>("/getData?serviceName=Interventi");
+                var response = await _httpClient.GetFromJsonAsync<object>("/getData?serviceName=Interventi");
                 return response!;
             }
             catch (Exception e)
@@ -63,13 +63,19 @@ namespace FrontEnd.BlazorWasm.Services
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Products>>>("/api/Products/get-products");
-                return response!;
+                var response = await _httpClient.GetAsync("/api/Products/get-products");
+                if (response.IsSuccessStatusCode)
+                {
+                    var rawData = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Response<IReadOnlyList<Products>>>(rawData)!;
+                }
+                var error = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response<IReadOnlyList<Products>>>(error)!;
             }
             catch (Exception e)
             {
                 _logger.LogError(new EventId(500, "Internal error"), e, "Error while processing");
-                return new Response<IReadOnlyList<Products>>("ERROR", "Failed to get data");
+                return new Response<IReadOnlyList<Products>>("ERROR", "Failed to get data. your session has experied.");
             }
         }
 

@@ -1,4 +1,8 @@
-﻿@page "/index2"
+﻿@page "/"
+
+@inject IJSRuntime jsInterop
+@inject IServerService server
+@inject NavigationManager navigator
 
 <PageTitle>Login</PageTitle>
 
@@ -33,20 +37,31 @@
             <tr>
                 <td style="width: 40%;"><span>&nbsp;</span></td>
                 <td style="text-align: left;">
-                    <table id="loginTable" border="0">
-                        <tr>
-                            <td class="loginLabel">Username</td>
-                            <td><input type="text" id="userName" /></td>
-                        </tr>
-                        <tr>
-                            <td class="loginLabel">Password</td>
-                            <td><input type="password" id="password" /></td>
-                        </tr>
-                        <tr>
-                            <td class="loginLabel">&nbsp;</td>
-                            <td style="text-align:center"><button id="btLogin" type="button" class="btn" style="height: 24px; width: 94px">Login</button></td>
-                        </tr>
-                    </table>
+                    @if (logInFailed)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @logInFailedMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    <EditForm Model="@user" OnValidSubmit="@LoginAsync">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <table id="loginTable" border="0">
+                            <tr>
+                                <td class="loginLabel">Username</td>
+                                <td><input type="text" id="userName" @bind-value="user.Username"/></td>
+                            </tr>
+                            <tr>
+                                <td class="loginLabel">Password</td>
+                                <td><input type="password" id="password"  @bind-value="user.Password"/></td>
+                            </tr>
+                            <tr>
+                                <td class="loginLabel">&nbsp;</td>
+                                <td style="text-align:center"><button id="btLogin" type="submit" class="btn" style="height: 24px; width: 94px">Login</button></td>
+                            </tr>
+                        </table>
+                    </EditForm>
                 </td>
             </tr>
         </tbody>
@@ -99,3 +114,63 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
 
 <input type="text" id="hidtk" value="" style="display:none" />
 <input type="text" id="hidCid" value="b3de83be-2c12-4031-a7de-787ef2c01c14" style="display:none" />
+
+@code {
+    private UserDTO user = new();
+    private bool logInFailed = false;
+    private string logInFailedMessage = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            logInFailedMessage = "Your session has experied";
+            navigator.NavigateTo("/");
+        }
+        else
+        {
+            navigator.NavigateTo("/load-data");
+        }
+    }
+
+    private async Task LoginAsync()
+    {
+        logInFailed = false;
+        var res = await server.AuthenticateAsync(user);
+        if (res.Status == "SUCCESS")
+        {
+            GoToHome(res.Data);
+        }
+        else if (res.Status == "ERROR")
+        {
+            logInFailedMessage = res.Message;
+            logInFailed = true;
+        }
+
+        user = new();//reset the form
+    }
+
+    private async Task AuthenticateAsync()
+    {
+        logInFailed = false;
+        var res = await server.LoginAsync(user);
+        if (res is not null)
+        {
+            GoToHome(res?.ToString());
+        }
+        else if (res is null)
+        {
+            logInFailedMessage = "Authentication error occured!";
+            logInFailed = true;
+        }
+
+        user = new();//reset the form
+    }
+
+    private async void GoToHome(string token)
+    {
+        await jsInterop.InvokeVoidAsync("setData", "token", token);
+        navigator.NavigateTo("/load-data");
+    }
+}
