@@ -4,6 +4,8 @@ using FrontEnd.BlazorWasm.Services.Interfaces;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using FrondEnd.Shared.Utils;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace FrontEnd.BlazorWasm.Services
 {
@@ -43,12 +45,12 @@ namespace FrontEnd.BlazorWasm.Services
             }
         }
 
-        public async Task<object> GetODataAsync(string token)
+        public async Task<OdataResponse> GetODataAsync(string token)
         {
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<object>("/getData?serviceName=Interventi");
+                var response = await _httpClient.GetFromJsonAsync<OdataResponse>("/getData?serviceName=Interventi");
                 return response!;
             }
             catch (Exception e)
@@ -79,20 +81,37 @@ namespace FrontEnd.BlazorWasm.Services
             }
         }
 
-        public async Task<Response<Products>> GetProductsDetailsAsync(string token, string id)
+        public async Task<Response<DetailsDTO>> GetProductsDetailsAsync(string token, string id)
         {
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 //TODO: the de get_by_id api. to be implemented
-
+                var response = await _httpClient.GetFromJsonAsync<DetailsDTO>($"/getData?serviceName=DettaglioIntervento&counter={id}");
                 //return result
-                return new Response<Products>("SUCCESS", "details get");//this is jus a similation
+                return new Response<DetailsDTO>("SUCCESS", "details get");//this is jus a similation
             }
             catch (Exception e)
             {
                 _logger.LogError(new EventId(500, "internal error"), e, "An error occured while processing");
-                return new Response<Products>("ERROR", "Failed to get result");
+                return new Response<DetailsDTO>("ERROR", "Failed to get result");
+            }
+        }
+
+        public async Task<bool> DownloadProceess(string token, string id)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                //TODO: the de get_by_id api. to be implemented
+                var response = await _httpClient.GetStreamAsync($"/getFile?id={id}");
+                //return result
+                return true;//this is jus a similation
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(500, "internal error"), e, "An error occured while processing");
+                return false;
             }
         }
 
@@ -100,20 +119,20 @@ namespace FrontEnd.BlazorWasm.Services
         {
             try
             {
-                var credentials = new
+                var credentials = new Request
                 {
-                    Username = user.Username,
-                    Password = user.Password,
-                    ClientId = Constants.CLIENTID
+                    username = user.Username,
+                    password = user.Password
                 };
+                var body = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
 
-                var resquest = await _httpClient.PostAsJsonAsync("/getToken", credentials);
+                var resquest = await _httpClient.PostAsync("/getToken", body);
                 if (resquest.IsSuccessStatusCode)
                 {
                     var rawData = await resquest.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<object>(rawData);
+                    var data = JObject.Parse(rawData).GetValue("token");
 
-                    return data!;
+                    return data!.ToString();
                 }
 
                 return null!;

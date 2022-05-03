@@ -22,13 +22,15 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="LogOutUserAndCleanLocalStorage"></button>
         </div>
     }
-    <TelerikGrid Data="@GetProducts" Pageable="true"
+    <TelerikGrid OnRead="@ReadData" TItem="Value" Pageable="true"
                  Sortable="true" FilterMode="@GridFilterMode.FilterMenu"
                  class="p-5" OnRowClick="OnRowClicked">
         <GridColumns>
-            <GridColumn Field="@nameof(Products.Name)" Title="Product Name" />
-            <GridColumn Field="@nameof(Products.Price)" Title="Price ($)" />
-            <GridColumn Field="@nameof(Products.Quantity)" title="Stock quantity" />
+            <GridColumn Field="@nameof(Value.codIntervento)" Title="Code Intervento" />
+            <GridColumn Field="@nameof(Value.dataIntervento)" Title="Data Intervento" />
+            <GridColumn Field="@nameof(Value.firmatario)" title="Firmatario" />
+            <GridColumn Field="@nameof(Value.luogoIntervento)" title="Luogo Intervento" />
+            <GridColumn Field="@nameof(Value.statoFattura)" title="Stato Fattura" />
         </GridColumns>
     </TelerikGrid>
 </div>
@@ -38,7 +40,8 @@
 
     private ObservableCollection<Products> GetProducts = default!;
     private bool showModal = false;
-    private Products selectedProduct = default!;
+    //private Products selectedProduct = default!;
+    private Value selectedProduct = default!;
     private string Error = string.Empty;
 
     private async Task ReadData(GridReadEventArgs readEventArgs)
@@ -49,22 +52,21 @@
             var data = await server.GetODataAsync(token);
             if (data is not null)
             {
-                var d = data.GetType().GetProperty("Values")?.GetValue(data) as IEnumerable<object>;
-                readEventArgs.Data = d;
-                readEventArgs.Total = d!.Count();
+                readEventArgs.Data = data.value;
+                readEventArgs.Total = data.value.Count();
             }
         }
     }
 
     private async Task OnRowClicked(GridRowClickEventArgs rowClickEventArgs)
     {
-        var item = (Products)rowClickEventArgs.Item;
+        var item = (Value)rowClickEventArgs.Item;
         var token = await jsInterop.InvokeAsync<string>("getData", "token");
         if (!string.IsNullOrWhiteSpace(token))
         {
             //this is just an api call simulation
             //TODO: call an api and use to result
-            var result = await server.GetProductsDetailsAsync(token, item.Id);
+            var result = await server.GetProductsDetailsAsync(token, item.RowID);
             selectedProduct = item;
             showModal = true;
             //js to display a alert
