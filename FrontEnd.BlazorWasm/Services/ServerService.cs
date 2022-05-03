@@ -50,7 +50,8 @@ namespace FrontEnd.BlazorWasm.Services
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<OdataResponse>("/getData?serviceName=Interventi");
+                var uri = new Uri("https://apitest.processcloud.net/PFAPI_Frontend/getData?serviceName=Interventi");
+                var response = await _httpClient.GetFromJsonAsync<OdataResponse>(uri);
                 return response!;
             }
             catch (Exception e)
@@ -87,7 +88,8 @@ namespace FrontEnd.BlazorWasm.Services
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 //TODO: the de get_by_id api. to be implemented
-                var response = await _httpClient.GetFromJsonAsync<DetailsDTO>($"/getData?serviceName=DettaglioIntervento&counter={id}");
+                var uri = new Uri($"https://apitest.processcloud.net/PFAPI_Frontend/getData?serviceName=DettaglioIntervento&counter={id}");
+                var response = await _httpClient.GetFromJsonAsync<DetailsDTO>(uri);
                 //return result
                 return new Response<DetailsDTO>("SUCCESS", "details get");//this is jus a similation
             }
@@ -104,7 +106,8 @@ namespace FrontEnd.BlazorWasm.Services
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 //TODO: the de get_by_id api. to be implemented
-                var response = await _httpClient.GetStreamAsync($"/getFile?id={id}");
+                var uri = new Uri($"https://apitest.processcloud.net/PFAPI_Frontend/getFile?id={id}");
+                var response = await _httpClient.GetStreamAsync(uri);
                 //return result
                 return true;//this is jus a similation
             }
@@ -125,8 +128,8 @@ namespace FrontEnd.BlazorWasm.Services
                     password = user.Password
                 };
                 var body = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
-
-                var resquest = await _httpClient.PostAsync("/getToken", body);
+                var uri = new Uri("https://apitest.processcloud.net/PFAPI_Frontend/getToken");
+                var resquest = await _httpClient.PostAsync(uri, body);
                 if (resquest.IsSuccessStatusCode)
                 {
                     var rawData = await resquest.Content.ReadAsStringAsync();

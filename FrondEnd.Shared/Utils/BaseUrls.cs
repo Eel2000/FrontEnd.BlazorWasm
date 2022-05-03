@@ -14,7 +14,7 @@ namespace FrondEnd.Shared.Utils
 #if REALESE
         public const string BASE_URL = "https://localhost:7247";//dev api url for the project change it if your env gives you different url in the launch settings file
 #elif DEBUG
-        public const string BASE_URL =" https://apitest.processcloud.net/PFAPI_Frontend"; // prod api url if your backend is hosted somewhere on the internet put that base url here.
+        public const string BASE_URL ="https://apitest.processcloud.net/PFAPI_Frontend"; // prod api url if your backend is hosted somewhere on the internet put that base url here.
 #endif
     }
 }
