@@ -1,19 +1,44 @@
-﻿
+﻿@inject IJSRuntime jsInterop
+@inject IServerService server
 
 <TelerikWindow Class="demo-window" Width="500px" Height="300px" Centered="true" @bind-Visible=@WindowVisible Modal="true">
     <WindowTitle>
-        <strong>Details of Product <b>@Products.Name</b></strong>
+        <strong>Details of Product <b>@Value.luogoIntervento</b></strong>
     </WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" />
     </WindowActions>
     <WindowContent>
-        <ul>
-            <li>@Products.Id</li>
-            <li>@Products.Name</li>
-            <li>@Products.Price</li>
-            <li>@Products.Quantity</li>
-        </ul>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">dataIntervento</th>
+                    <th scope="col">firmatario</th>
+                    <th scope="col">luogoIntervento</th>
+                    <th scope="col">statoFattura</th>
+                    <th scope="col">Vabel</th>
+                    <th scope="col">Content</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in detail)
+                {
+                    <tr>
+                        <td>@Value.dataIntervento</td>
+                        <td>@Value.firmatario</td>
+                        <td>@Value.luogoIntervento</td>
+                        <td>@Value.statoFattura</td>
+                        <td>@item.Vabel</td>
+                        <td>@item.Content</td>
+                        <td>
+                            <button class="btn btn-secondary" @onclick="(()=>Download(item.IdFile))">Download file</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </WindowContent>
 </TelerikWindow>
 
@@ -21,7 +46,36 @@
     [Parameter]
     public bool WindowVisible { get; set; } = false;
 
+    //[Parameter]
+    //public Products Products { get; set; } = default!;
     [Parameter]
-    public Products Products { get; set; } = default!;
+    public Value Value { get; set; } = default!;
+
+    IEnumerable<DetailData> detail = default!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            var data = await server.GetProductsDetailsAsync(token, Value?.RowID);
+            if (data is not null)
+            {
+                if (data.Status == "SUCCESS")
+                {
+                    detail = new List<DetailData>(data.Data.Value);
+                }
+            }
+        }
+    }
+
+    async void Download(string id)
+    {
+        var token = await jsInterop.InvokeAsync<string>("getData", "token");
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            var downloaded = await server.DownloadProceess(token, id);
+        }
+    }
 
 }

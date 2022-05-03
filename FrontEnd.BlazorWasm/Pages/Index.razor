@@ -44,7 +44,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
-                    <EditForm Model="@user" OnValidSubmit="@LoginAsync">
+                    <EditForm Model="@user" OnValidSubmit="@AuthenticateAsync">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
                         <table id="loginTable" border="0">
