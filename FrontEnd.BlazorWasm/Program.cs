@@ -10,7 +10,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 
-builder.Services.AddScoped(sp => new HttpClient());
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://apitest.processcloud.net/PFAPI_Frontend") });
 
 //Adding telerik to the IoC container
 builder.Services.AddTelerikBlazor();
