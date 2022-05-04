@@ -9,25 +9,25 @@ namespace FrondEnd.Shared.DTOs
 #nullable disable
     public class DownloadFileResponse
     {
-        public Info info { get; set; }
-        public object returnData { get; set; }
-        public object pfService { get; set; }
-        public ReturnFileBinary returnFileBinary { get; set; }
+        public Info Info { get; set; }
+        public object ReturnData { get; set; }
+        public object PfService { get; set; }
+        public ReturnFileBinary ReturnFileBinary { get; set; }
     }
     public class Info
     {
-        public object link { get; set; }
-        public string message { get; set; }
-        public object error { get; set; }
-        public object messageID { get; set; }
-        public string status { get; set; }
-        public int count { get; set; }
+        public object Link { get; set; }
+        public string Message { get; set; }
+        public object Error { get; set; }
+        public object MessageID { get; set; }
+        public string Status { get; set; }
+        public int Count { get; set; }
     }
 
     public class ReturnFileBinary
     {
-        public string fileName { get; set; }
-        public string fileType { get; set; }
-        public string base64Binary { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public string Base64Binary { get; set; }
     }
 }

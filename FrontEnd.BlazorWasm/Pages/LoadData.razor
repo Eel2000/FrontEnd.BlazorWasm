@@ -55,9 +55,9 @@
             <GridColumns>
                 <GridColumn Field="@nameof(Value.codIntervento)" Title="Code Intervento" />
                 <GridColumn Field="@nameof(Value.dataIntervento)" Title="Data Intervento" />
-                <GridColumn Field="@nameof(Value.firmatario)" title="Firmatario" />
-                <GridColumn Field="@nameof(Value.luogoIntervento)" title="Luogo Intervento" />
-                <GridColumn Field="@nameof(Value.statoFattura)" title="Stato Fattura" />
+                <GridColumn Field="@nameof(Value.firmatario)" Title="Firmatario" />
+                <GridColumn Field="@nameof(Value.luogoIntervento)" Title="Luogo Intervento" />
+                <GridColumn Field="@nameof(Value.statoFattura)" Title="Stato Fattura" />
             </GridColumns>
         </TelerikGrid>
     </div>
@@ -146,4 +146,4 @@
         await jsInterop.InvokeVoidAsync("clearStorage");
         navigator.NavigateTo("/");
     }
-    }
+}
