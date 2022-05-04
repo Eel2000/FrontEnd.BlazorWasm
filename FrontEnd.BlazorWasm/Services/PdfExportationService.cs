@@ -67,12 +67,22 @@ namespace FrontEnd.BlazorWasm.Services
 
         }
 
-        private async ValueTask<object> SaveAs(string filename, byte[] data)
+        public async ValueTask<object> SaveAs(string filename, byte[] data)
         {
             var result = await js.InvokeAsync<object>(
             "saveAsFile",
             filename,
             Convert.ToBase64String(data));
+
+            return result;
+        }
+        
+        public async ValueTask<object> SaveAs(string filename, string base64File)
+        {
+            var result = await js.InvokeAsync<object>(
+            "saveAsFile",
+            filename,
+            base64File);
 
             return result;
         }

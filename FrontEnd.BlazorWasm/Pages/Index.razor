@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Telerik.Blazor
 
 @inject IJSRuntime jsInterop
 @inject IServerService server
@@ -50,11 +51,11 @@
                         <table id="loginTable" border="0">
                             <tr>
                                 <td class="loginLabel">Username</td>
-                                <td><input type="text" id="userName" @bind-value="user.Username"/></td>
+                                <td><input type="text" id="userName" @bind-value="user.Username" /></td>
                             </tr>
                             <tr>
                                 <td class="loginLabel">Password</td>
-                                <td><input type="password" id="password"  @bind-value="user.Password"/></td>
+                                <td><input type="password" id="password" @bind-value="user.Password" /></td>
                             </tr>
                             <tr>
                                 <td class="loginLabel">&nbsp;</td>
@@ -120,6 +121,9 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
     private bool logInFailed = false;
     private string logInFailedMessage = default!;
 
+    [CascadingParameter]
+    public DialogFactory Dialogs { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var token = await jsInterop.InvokeAsync<string>("getData", "token");
@@ -157,6 +161,13 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
         var res = await server.LoginAsync(user);
         if (res is not null)
         {
+            if (string.IsNullOrWhiteSpace(res.ToString()))
+            {
+                //logInFailedMessage = "Authentication error occured! Invalid Credentials";
+                //logInFailed = true;
+                await ShowAlertWithTitle("Authentication error occured! Invalid Credentials", "Authentication Error");
+                return;
+            }
             GoToHome(res?.ToString());
         }
         else if (res is null)
@@ -166,6 +177,13 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
         }
 
         user = new();//reset the form
+    }
+
+    async Task ShowAlertWithTitle(string message, string title)
+    {
+        await Dialogs.AlertAsync(message, title);
+
+        Console.WriteLine(message);
     }
 
     private async void GoToHome(string token)

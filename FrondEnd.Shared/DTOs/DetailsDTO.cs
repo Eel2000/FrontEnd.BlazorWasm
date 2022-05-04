@@ -12,12 +12,14 @@ namespace FrondEnd.Shared.DTOs
     {
          [JsonProperty("@odata.context")]
         public string OdataContext { get; set; }
+
+        [JsonProperty("value")]
         public List<DetailData> Value { get; set; }
     }
 
     public class DetailData
     {
-        public string Vabel { get; set; }
+        public string label { get; set; }
         public string Content { get; set; }
         public string IdFile { get; set; }
     }
