@@ -14,11 +14,13 @@ namespace FrontEnd.BlazorWasm.Services
 
         private readonly HttpClient _httpClient;
         private readonly ILogger<ServerService> _logger;
+        private readonly IPdfExportationService _exportationService;
 
-        public ServerService(HttpClient httpClient, ILogger<ServerService> logger)
+        public ServerService(HttpClient httpClient, ILogger<ServerService> logger, IPdfExportationService exportationService)
         {
             _logger = logger;
             _httpClient = httpClient;
+            _exportationService = exportationService;
         }
 
         public async Task<Response<string>> AuthenticateAsync(UserDTO user)
@@ -51,8 +53,9 @@ namespace FrontEnd.BlazorWasm.Services
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 var uri = new Uri("https://apitest.processcloud.net/PFAPI_Frontend/getData?serviceName=Interventi");
-                var response = await _httpClient.GetFromJsonAsync<OdataResponse>(uri);
-                return response!;
+                var response = await _httpClient.GetFromJsonAsync<object>(uri);
+                var data = JsonConvert.DeserializeObject<OdataResponse>(response.ToString());
+                return data!;
             }
             catch (Exception e)
             {
@@ -89,9 +92,10 @@ namespace FrontEnd.BlazorWasm.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 //TODO: the de get_by_id api. to be implemented
                 var uri = new Uri($"https://apitest.processcloud.net/PFAPI_Frontend/getData?serviceName=DettaglioIntervento&counter={id}");
-                var response = await _httpClient.GetFromJsonAsync<DetailsDTO>(uri);
+                var response = await _httpClient.GetFromJsonAsync<object>(uri);
+                var data = JsonConvert.DeserializeObject<DetailsDTO>(response.ToString());
                 //return result
-                return new Response<DetailsDTO>("SUCCESS", "details get");//this is jus a similation
+                return new Response<DetailsDTO>("SUCCESS", "details get", data);//this is jus a similation
             }
             catch (Exception e)
             {
@@ -107,9 +111,23 @@ namespace FrontEnd.BlazorWasm.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 //TODO: the de get_by_id api. to be implemented
                 var uri = new Uri($"https://apitest.processcloud.net/PFAPI_Frontend/getFile?id={id}");
-                var response = await _httpClient.GetStreamAsync(uri);
-                //return result
-                return true;//this is jus a similation
+                var response = await _httpClient.GetFromJsonAsync<object>(uri);
+                var data = JsonConvert.DeserializeObject<DownloadFileResponse>(response.ToString());
+                if (data.returnFileBinary is not null)
+                {
+                    if (!string.IsNullOrWhiteSpace(data.returnFileBinary.base64Binary))
+                    {
+                        var filefromApi = data.returnFileBinary;
+                        var filename = string.IsNullOrWhiteSpace(filefromApi.fileName) ? $"report-{Guid.NewGuid()}.pdf" : filefromApi.fileName;
+                        var fileExtesion = string.IsNullOrWhiteSpace(filefromApi.fileType) ? "pdf" : filefromApi.fileType;
+
+                        var realName = filename.EndsWith(".pdf") ? filename : $"{filename}.{fileExtesion}";
+                        await _exportationService.SaveAs(filename: realName, base64File: filefromApi.base64Binary);
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
             }
             catch (Exception e)
             {

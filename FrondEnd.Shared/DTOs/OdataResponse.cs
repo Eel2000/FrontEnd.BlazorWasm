@@ -10,10 +10,10 @@ namespace FrondEnd.Shared.DTOs
 #nullable disable
     public class OdataResponse
     {
-        // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-
         [JsonProperty("@odata.context")]
         public string OdataContext { get; set; }
+
+        [JsonProperty("value")]
         public List<Value> value { get; set; }
 
 
