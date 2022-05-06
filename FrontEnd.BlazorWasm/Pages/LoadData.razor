@@ -25,44 +25,44 @@
         </tr>
     </tbody>
 </table>
-<div class="container">
-    @*<button class="btn btn-primary p-4" @onclick="@(()=>ExportToPDF())"><span class="oi oi-print">Export PDF</span></button>*@
-    @*<button class="btn btn-primary text-white p-4" @onclick="LogOutUserAndCleanLocalStorage">Log out</button>*@
+@*<div class="container">*@
+@*<button class="btn btn-primary p-4" @onclick="@(()=>ExportToPDF())"><span class="oi oi-print">Export PDF</span></button>*@
+@*<button class="btn btn-primary text-white p-4" @onclick="LogOutUserAndCleanLocalStorage">Log out</button>*@
 
-    @if (!string.IsNullOrWhiteSpace(Error))
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @Error
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="LogOutUserAndCleanLocalStorage"></button>
-        </div>
-    }
-    <div id="divDettaglio" class="container">
-        <div class="panel-heading">
-            <h2>Rapporto intervento</h2>
-        </div>
-        @if (GetValues is null)
-        {
-            <p class="text-sm-center">Loading...</p>
-        }
-        <table id="dettaglio">
-            <colgroup>
-                <col class="label" />
-                <col class="content" />
-            </colgroup>
-        </table>
-        <TelerikGrid Data="@GetValues" TItem="Value" Pageable="true"
-                     Sortable="true" FilterMode="@GridFilterMode.FilterMenu" OnRowClick="OnRowClicked">
-            <GridColumns>
-                <GridColumn Field="@nameof(Value.codIntervento)" Title="Code Intervento" />
-                <GridColumn Field="@nameof(Value.dataIntervento)" Title="Data Intervento" />
-                <GridColumn Field="@nameof(Value.firmatario)" title="Firmatario" />
-                <GridColumn Field="@nameof(Value.luogoIntervento)" title="Luogo Intervento" />
-                <GridColumn Field="@nameof(Value.statoFattura)" title="Stato Fattura" />
-            </GridColumns>
-        </TelerikGrid>
+@if (!string.IsNullOrWhiteSpace(Error))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="LogOutUserAndCleanLocalStorage"></button>
     </div>
-</div>
-<DetailsPage WindowVisible=showModal Value=selectedProduct />
+}
+@*<div id="divDettaglio" class="container">*@
+    <div class="panel-heading">
+        <h2>Rapporto intervento</h2>
+    </div>
+    @*@if (GetValues is null)
+        {
+        <p class="text-sm-center">Loading...</p>
+        }*@
+    <table id="dettaglio">
+        <colgroup>
+            <col class="label" />
+            <col class="content" />
+        </colgroup>
+    </table>
+@*</div>*@
+<TelerikGrid Data="@GetValues" TItem="Value" Pageable="true"
+             Sortable="true" FilterMode="@GridFilterMode.FilterMenu" OnRowClick="OnRowClicked">
+    <GridColumns>
+        <GridColumn Field="@nameof(Value.codIntervento)" Title="Code Intervento" />
+        <GridColumn Field="@nameof(Value.dataIntervento)" Title="Data Intervento" />
+        <GridColumn Field="@nameof(Value.firmatario)" Title="Firmatario" />
+        <GridColumn Field="@nameof(Value.luogoIntervento)" Title="Luogo Intervento" />
+        <GridColumn Field="@nameof(Value.statoFattura)" Title="Stato Fattura" />
+    </GridColumns>
+</TelerikGrid>
+@*</div>*@
+@*<DetailsPage WindowVisible=showModal Value=selectedProduct />*@
 
 @code {
 
@@ -99,7 +99,10 @@
             {
                 //var result = await server.GetProductsDetailsAsync(token, item.RowID);
                 selectedProduct = item;
-                showModal = true;
+                //showModal = true;
+                var encodedData = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(item));
+                var base64DataEncoded = Convert.ToBase64String(encodedData);
+                navigator.NavigateTo($"/load-data/rp={base64DataEncoded}");
             }
             //js to display a alert
             //await jsInterop.InvokeVoidAsync($"callAlert", $"**{item.Name}** has been selected");
@@ -111,8 +114,17 @@
         var token = await jsInterop.InvokeAsync<string>("getData", "token");
         if (!string.IsNullOrWhiteSpace(token))
         {
-            var response = await server.GetODataAsync(token);
-            GetValues = new ObservableCollection<Value>(response.value);
+            var rawData = await jsInterop.InvokeAsync<string>("getData", "data");
+            if (!string.IsNullOrWhiteSpace(rawData))
+            {
+                var data = JsonSerializer.Deserialize<OdataResponse>(rawData);
+                GetValues = new ObservableCollection<Value>(data.value);
+            }
+            else
+            {
+                var response = await server.GetODataAsync(token);
+                GetValues = new ObservableCollection<Value>(response.value);
+            }
         }
         else
         {
@@ -146,4 +158,4 @@
         await jsInterop.InvokeVoidAsync("clearStorage");
         navigator.NavigateTo("/");
     }
-    }
+}

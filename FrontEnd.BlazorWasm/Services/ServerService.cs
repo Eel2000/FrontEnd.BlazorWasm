@@ -113,16 +113,16 @@ namespace FrontEnd.BlazorWasm.Services
                 var uri = new Uri($"https://apitest.processcloud.net/PFAPI_Frontend/getFile?id={id}");
                 var response = await _httpClient.GetFromJsonAsync<object>(uri);
                 var data = JsonConvert.DeserializeObject<DownloadFileResponse>(response.ToString());
-                if (data.returnFileBinary is not null)
+                if (data.ReturnFileBinary is not null)
                 {
-                    if (!string.IsNullOrWhiteSpace(data.returnFileBinary.base64Binary))
+                    if (!string.IsNullOrWhiteSpace(data.ReturnFileBinary.Base64Binary))
                     {
-                        var filefromApi = data.returnFileBinary;
-                        var filename = string.IsNullOrWhiteSpace(filefromApi.fileName) ? $"report-{Guid.NewGuid()}.pdf" : filefromApi.fileName;
-                        var fileExtesion = string.IsNullOrWhiteSpace(filefromApi.fileType) ? "pdf" : filefromApi.fileType;
+                        var filefromApi = data.ReturnFileBinary;
+                        var filename = string.IsNullOrWhiteSpace(filefromApi.FileName) ? $"report-{Guid.NewGuid()}.pdf" : filefromApi.FileName;
+                        var fileExtesion = string.IsNullOrWhiteSpace(filefromApi.FileType) ? "pdf" : filefromApi.FileType;
 
                         var realName = filename.EndsWith(".pdf") ? filename : $"{filename}.{fileExtesion}";
-                        await _exportationService.SaveAs(filename: realName, base64File: filefromApi.base64Binary);
+                        await _exportationService.SaveAs(filename: realName, base64File: filefromApi.Base64Binary);
                         return true;
                     }
                     return false;
