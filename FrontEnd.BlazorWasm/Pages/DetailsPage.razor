@@ -15,50 +15,72 @@
                 <span style="font-size: 2rem;color: #003579;">Interventi manutenzione</span>
             </td>
             <td style="text-align: right;width:110px">
-                <button id="btLogoff" type="button" class="btn" @onclick="BackToList" style="height: 24px; width: 94px;">Back</button>
+                <button id="btLogoff" type="button" class="btn btn-primary" @onclick="BackToList" style="height: 24px; width: 94px;">Back</button>
             </td>
         </tr>
     </tbody>
 </table>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />\
+<dl class="dl-horizontal">
+    <dt>dataIntervento</dt>
+    <dd>@Value.dataIntervento</dd>
 
-<table class="table pt-5">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">dataIntervento</th>
-            <th scope="col">firmatario</th>
-            <th scope="col">luogoIntervento</th>
-            <th scope="col">statoFattura</th>
-            <th scope="col">Vabel</th>
-            <th scope="col">Content</th>
-            <th scope="col">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (detail is null)
-        {
-            <tr>Loading...</tr>
-        }
-        else
-        {
-            @foreach (var item in detail)
-            {
+    <dt>firmatario</dt>
+    <dd>@Value.firmatario</dd>
+
+    <dt>luogoIntervento</dt>
+    <dd>@Value.luogoIntervento</dd>
+
+    <dt>statoFattura</dt>
+    <dd>@Value.statoFattura</dd>
+
+    <dt>Content</dt>
+    <dd>
+        <table class="table">
+            @*<thead>
                 <tr>
-                    <td>#</td>
-                    <td>@Value.dataIntervento</td>
-                    <td>@Value.firmatario</td>
-                    <td>@Value.luogoIntervento</td>
-                    <td>@Value.statoFattura</td>
-                    <td>@item.label</td>
-                    <td>@item.Content</td>
-                    <td>
-                        <button class="btn btn-secondary" @onclick="(()=>Download(item.IdFile))">Download file</button>
-                    </td>
+                    <th scope="col">#</th>
+                    <th scope="col">Label</th>
+                    <th scope="col">Content</th>
+                    <th scope="col">Action</th>
                 </tr>
-            }
-        }
-    </tbody>
-</table>
+            </thead>*@
+            <tbody>
+                @if (detail is null)
+                {
+                    <tr>Loading...</tr>
+                }
+                else
+                {
+                    @foreach (var item in detail)
+                    {
+                        <tr>
+                            <td>#</td>
+                            <td>@item.label</td>
+                            <td>@item.Content</td>
+                            <td>
+                                @if (item.Content.Contains(".pdf"))
+                                {
+                                    <button class="btn btn-secondary" @onclick="(()=>Download(item.IdFile))">Download file</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </dd>
+</dl>
+
 
 @code {
     //[Parameter]
