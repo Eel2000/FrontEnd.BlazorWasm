@@ -27,7 +27,13 @@
 <!-- <td>  <h1>Gestione interventi </h1> </td> -->
 <!-- </tr> -->
 <!-- </table> -->
-
+@if (logInFailed)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @logInFailedMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div id="loginDiv" style="width:100%;display:inline-block;margin-top:50px">
     <br />
     <br />
@@ -38,13 +44,6 @@
             <tr>
                 <td style="width: 40%;"><span>&nbsp;</span></td>
                 <td style="text-align: left;">
-                    @if (logInFailed)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            @logInFailedMessage
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
                     <EditForm Model="@user" OnValidSubmit="@AuthenticateAsync">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
@@ -117,6 +116,7 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
 <input type="text" id="hidCid" value="b3de83be-2c12-4031-a7de-787ef2c01c14" style="display:none" />
 
 @code {
+
     private UserDTO user = new();
     private bool logInFailed = false;
     private string logInFailedMessage = default!;
@@ -163,9 +163,10 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
         {
             if (string.IsNullOrWhiteSpace(res.ToString()))
             {
-                //logInFailedMessage = "Authentication error occured! Invalid Credentials";
-                //logInFailed = true;
-                await ShowAlertWithTitle("Authentication error occured! Invalid Credentials", "Authentication Error");
+                logInFailedMessage = "Authentication error occured! Invalid Credentials";
+                logInFailed = true;
+                //await ShowAlertWithTitle("Authentication error occured! Invalid Credentials", "Authentication Error");
+
                 return;
             }
             GoToHome(res?.ToString());
@@ -176,7 +177,7 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
             logInFailed = true;
         }
 
-        user = new();//reset the form
+        
     }
 
     async Task ShowAlertWithTitle(string message, string title)
@@ -189,6 +190,9 @@ Source.read(); // "read()" will fire the "change" event of the dataSource and th
     private async void GoToHome(string token)
     {
         await jsInterop.InvokeVoidAsync("setData", "token", token);
+        var data = await server.GetODataAsync(token);
+        await jsInterop.InvokeVoidAsync("setData", "data", JsonSerializer.Serialize(data));
+        user = new();//reset the form
         navigator.NavigateTo("/load-data");
     }
 }
