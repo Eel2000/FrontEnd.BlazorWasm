@@ -62,7 +62,8 @@
     </table>
 @*</div>*@
 <TelerikGrid Data="@GetValues" TItem="Value" Pageable="true"
-             Sortable="true" FilterMode="@GridFilterMode.FilterMenu" OnRowClick="OnRowClicked">
+             Sortable="true" FilterMode="@GridFilterMode.FilterMenu" 
+             OnRowClick="OnRowClicked" Height="500px">
     <GridColumns>
         <GridColumn Field="@nameof(Value.codIntervento)" Title="Code Intervento" />
         <GridColumn Field="@nameof(Value.dataIntervento)" Title="Data Intervento" />
